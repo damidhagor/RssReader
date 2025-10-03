@@ -4,4 +4,5 @@
     <Project Path="Aspire/ServiceDefaults/ServiceDefaults.csproj" Id="7cf33b23-978c-481a-8fee-5e490a352323" />
   </Folder>
   <Project Path="RssReader.Api/RssReader.Api.csproj" />
+  <Project Path="RssReader.Data/RssReader.Data.csproj" Id="aec3a91e-74b4-412b-82b5-5ccea21fbca3" />
 </Solution>
