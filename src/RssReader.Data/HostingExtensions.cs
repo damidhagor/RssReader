@@ -13,6 +13,8 @@ public static class HostingExtensions
     {
         builder.AddMongoDBClient(connectionName, configureSettings, configureClientSettings);
 
+        builder.Services.TryAddSingleton<IRssFeedRepository, RssFeedRepository>();
+
         return builder;
     }
 }
