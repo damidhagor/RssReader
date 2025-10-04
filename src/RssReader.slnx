@@ -5,4 +5,5 @@
   </Folder>
   <Project Path="RssReader.Api/RssReader.Api.csproj" />
   <Project Path="RssReader.Data/RssReader.Data.csproj" Id="aec3a91e-74b4-412b-82b5-5ccea21fbca3" />
+  <Project Path="RssReader.SourceGeneration/RssReader.SourceGeneration.csproj" />
 </Solution>
