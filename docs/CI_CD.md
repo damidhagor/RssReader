@@ -19,35 +19,38 @@ for every diagnostic when run under `GITHUB_ACTIONS=true`.
 
 Validates the solution (`src/RssReader.slnx`).
 
-- **Triggers:** `pull_request`, scoped via `paths` to `src/**`, the workflow file itself,
-  `.github/scripts/format-check.sh`, `global.json` and `Directory.Packages.props` — so doc-only PRs don't
-  trigger it. `push` to `main` has **no** path filter — every merge to `main` always runs the full
-  build/test/coverage pipeline regardless of what changed.
-- **Runner:** `ubuntu-latest`, with `actions/setup-dotnet@v6` installing the `11.0.x` SDK.
-- **Steps:**
-  1. Restore.
-  2. **Build** — `dotnet build -c Release --no-restore -p:EnforceCodeStyleInBuild=true -warnaserror`.
-     Fails on compiler errors and on any Warning-severity analyzer/style diagnostic (promoted to an error
-     by `-warnaserror`). Diagnostics are surfaced via the .NET SDK's own native GitHub Actions
-     annotations — no custom parsing.
-  3. **Format check** — runs `.github/scripts/format-check.sh <solution>`, which invokes `dotnet format
-     --verify-no-changes --severity info --no-restore` (no rules excluded by default — see the script's
-     header comment for how to add an exclusion later if a specific rule needs it), runs with
-     `if: always()` so it still executes (and reports its own findings) even if the Build step failed.
-     Fails on any formatting/style drift at `info` severity or above — i.e. everything `dotnet format`
-     recognizes, since `info` is its lowest severity. The script also converts `dotnet format`'s
-     plain-text output into GitHub Actions `::error`/`::warning` annotations and a deduplicated, grouped
-     (by severity, rule, message) job-summary table (Rule | Severity | Message | Locations), since
-     `dotnet format` itself only prints plain text.
-  4. **Test + coverage** — runs the TUnit test suite via `dotnet test -- --report-trx --coverage
-     --coverage-output-format cobertura` (TRX + Cobertura output). Fails on test failures; runs with
-     `if: always()` so it still executes even if the Format check step already failed.
-  5. **Reporting** — each step only runs when its required input files actually exist (guarded via
-     `hashFiles(...)` in its `if:` condition), so a real build failure doesn't cascade into a wall of
-     unrelated report-generation failures: `dorny/test-reporter` publishes pass/fail results from the TRX
-     files as PR check annotations (`fail-on-empty: false`), `danielpalme/ReportGenerator-GitHub-Action`
-     turns the Cobertura files into a markdown coverage summary posted to the job summary, and the full
-     HTML coverage report is uploaded as a workflow artifact.
+**Triggers:** `pull_request`, scoped via `paths` to `src/**`, the workflow file itself,
+`.github/scripts/format-check.sh`, `global.json`, `Directory.Build.props` and `Directory.Packages.props` —
+so doc-only PRs don't trigger it. `push` to `main` has **no** path filter — every merge to `main` always
+runs the full build/test/coverage pipeline regardless of what changed.
+
+**Runner:** `ubuntu-latest`, with `actions/setup-dotnet@v6` installing the `11.0.x` SDK.
+
+**Steps:**
+
+1. Restore.
+2. **Build** — `dotnet build -c Release --no-restore -p:EnforceCodeStyleInBuild=true -warnaserror`.
+   Fails on compiler errors and on any Warning-severity analyzer/style diagnostic (promoted to an error
+   by `-warnaserror`). Diagnostics are surfaced via the .NET SDK's own native GitHub Actions
+   annotations — no custom parsing.
+3. **Format check** — runs `.github/scripts/format-check.sh <solution>`, which invokes `dotnet format
+   --verify-no-changes --severity info --no-restore` (no rules excluded by default — see the script's
+   header comment for how to add an exclusion later if a specific rule needs it), runs with
+   `if: always()` so it still executes (and reports its own findings) even if the Build step failed.
+   Fails on any formatting/style drift at `info` severity or above — i.e. everything `dotnet format`
+   recognizes, since `info` is its lowest severity. The script also converts `dotnet format`'s
+   plain-text output into GitHub Actions `::error`/`::warning` annotations and a deduplicated, grouped
+   (by severity, rule, message) job-summary table (Rule | Severity | Message | Locations), since
+   `dotnet format` itself only prints plain text.
+4. **Test + coverage** — runs the TUnit test suite via `dotnet test -- --report-trx --coverage
+   --coverage-output-format cobertura` (TRX + Cobertura output). Fails on test failures; runs with
+   `if: always()` so it still executes even if the Format check step already failed.
+5. **Reporting** — each step only runs when its required input files actually exist (guarded via
+   `hashFiles(...)` in its `if:` condition), so a real build failure doesn't cascade into a wall of
+   unrelated report-generation failures: `dorny/test-reporter` publishes pass/fail results from the TRX
+   files as PR check annotations (`fail-on-empty: false`), `danielpalme/ReportGenerator-GitHub-Action`
+   turns the Cobertura files into a markdown coverage summary posted to the job summary, and the full
+   HTML coverage report is uploaded as a workflow artifact.
 
 > **Known limitation:** `dorny/test-reporter` needs a `GITHUB_TOKEN` with `checks: write`, which forked
 > `pull_request` runs don't receive. For a PR opened from a fork, the test-reporter step may silently
@@ -65,17 +68,19 @@ vulnerabilities.
   - `workflow_dispatch` — manual on-demand run.
   - `pull_request` — scoped via `paths` to `src/**` and the workflow's own files.
   - `push` to `main` — **no** path filter, so every merge to `main` always gets a full scan.
-- **Runner:** `ubuntu-latest`, single SDK (only `dotnet list package` runs here, no test execution).
-- **Steps:** restore `src/RssReader.slnx`, then run `.github/scripts/check-vulnerabilities.sh
-  src/RssReader.slnx`, which:
-  1. Runs `dotnet list package --vulnerable --include-transitive --format json` and parses the JSON
-     output with `jq`.
-  2. **High or Critical** severity findings emit a `::error::` annotation and fail the job.
-  3. **Moderate or Low** severity findings emit a `::warning::` annotation only — the job still
-     succeeds. This is the one non-blocking exception to the Guiding Principle above, deliberate
-     because low-severity transitive-dependency findings are frequently not actionable on a short
-     timeline and a hard fail there would block unrelated PRs too often.
-  4. All findings (regardless of severity) are written as a markdown table to the job summary.
+**Runner:** `ubuntu-latest`, single SDK (only `dotnet list package` runs here, no test execution).
+
+**Steps:** restore `src/RssReader.slnx`, then run `.github/scripts/check-vulnerabilities.sh
+src/RssReader.slnx`, which:
+
+1. Runs `dotnet list package --vulnerable --include-transitive --format json` and parses the JSON
+   output with `jq`.
+2. **High or Critical** severity findings emit a `::error::` annotation and fail the job.
+3. **Moderate or Low** severity findings emit a `::warning::` annotation only — the job still
+   succeeds. This is the one non-blocking exception to the Guiding Principle above, deliberate
+   because low-severity transitive-dependency findings are frequently not actionable on a short
+   timeline and a hard fail there would block unrelated PRs too often.
+4. All findings (regardless of severity) are written as a markdown table to the job summary.
 
 ## Shared Scripts (`.github/scripts/`)
 

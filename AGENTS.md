@@ -433,6 +433,24 @@ situation genuinely calls for it rather than looking for excuses to use them:
 
 ## Project Structure
 
-Not yet finalized — the concrete solution/project layout (server, client(s), shared libraries) depends on the
-architecture decisions from the roadmap-brainstorming pass (see `docs/ROADMAP.md`). Update this section once
-that structure exists.
+```
+src/
+├── RssReader.AppHost/            Aspire local-dev orchestration (Postgres, Api, Worker, Web, migrations)
+├── RssReader.ServiceDefaults/    Shared OpenTelemetry/health-check/resilience wiring
+├── RssReader.Data/               EF Core entities, DbContext, migrations (PostgreSQL)
+├── RssReader.Rss/                Feed fetching (conditional GET) and parsing (RSS 2.0 + Atom 1.0)
+├── RssReader.Api/                Client-facing Minimal API (own request/response DTOs)
+├── RssReader.Worker/             Background feed-polling host
+├── RssReader.Web/                Blazor WebAssembly client
+├── tests/
+│   ├── RssReader.Data.Tests/
+│   ├── RssReader.Rss.Tests/
+│   └── RssReader.Api.Tests/
+└── RssReader.slnx
+```
+
+No separate `RssReader.Core` project — EF Core entities in `RssReader.Data` *are* the domain model. Introduce
+a `Core` project later only if real shared domain/business logic emerges that doesn't belong in `Data`.
+
+See `docs/ARCHITECTURE.md` for how these components fit together and `docs/ROADMAP.md` for the rationale
+behind each choice.

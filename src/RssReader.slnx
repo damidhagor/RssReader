@@ -1,1 +1,29 @@
-<Solution />
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../README.md" />
+    <File Path="../AGENTS.md" />
+    <File Path="../.editorconfig" />
+    <File Path="../.gitattributes" />
+    <File Path="../.gitignore" />
+    <File Path="../global.json" />
+    <File Path="../Directory.Build.props" />
+    <File Path="../Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/Solution Items/docs/">
+    <File Path="../docs/ARCHITECTURE.md" />
+    <File Path="../docs/CI_CD.md" />
+    <File Path="../docs/ROADMAP.md" />
+    <File Path="../docs/TESTING.md" />
+  </Folder>
+  <Folder Name="/Solution Items/.github/">
+    <File Path="../.github/copilot-instructions.md" />
+  </Folder>
+  <Folder Name="/Solution Items/.github/workflows/">
+    <File Path="../.github/workflows/ci.yml" />
+    <File Path="../.github/workflows/dependency-check.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/.github/scripts/">
+    <File Path="../.github/scripts/format-check.sh" />
+    <File Path="../.github/scripts/check-vulnerabilities.sh" />
+  </Folder>
+</Solution>
