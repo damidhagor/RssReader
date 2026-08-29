@@ -1,0 +1,16 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# Test results
+TestResults/
+
+# Visual Studio
+.vs/
+*.user
+
+# Development settings (may contain secrets)
+appsettings.Development.json
+
+# TUnit test configuration (contains secrets)
+*.testconfig.json
