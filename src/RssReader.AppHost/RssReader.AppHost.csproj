@@ -1,0 +1,14 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.5.3">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<AspireUseCliBundle>true</AspireUseCliBundle>
+		<UserSecretsId>4002174e-5b71-4ecf-8a66-8c1f3c21e03e</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aspire.Hosting.PostgreSQL" />
+		<PackageReference Include="CommunityToolkit.Aspire.Hosting.PostgreSQL.Extensions" />
+	</ItemGroup>
+
+</Project>
