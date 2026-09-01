@@ -103,14 +103,14 @@ csharp_style_var_for_built_in_types = true
 csharp_style_var_when_type_is_apparent = true
 
 # Expression-bodied members
-csharp_style_expression_bodied_accessors = true:silent
+csharp_style_expression_bodied_accessors = true:suggestion
 csharp_style_expression_bodied_constructors = false:silent
-csharp_style_expression_bodied_indexers = true:silent
+csharp_style_expression_bodied_indexers = true:suggestion
 csharp_style_expression_bodied_lambdas = true:suggestion
 csharp_style_expression_bodied_local_functions = when_on_single_line:silent
-csharp_style_expression_bodied_methods = false:silent
-csharp_style_expression_bodied_operators = false:silent
-csharp_style_expression_bodied_properties = true:silent
+csharp_style_expression_bodied_methods = true:suggestion
+csharp_style_expression_bodied_operators = true:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
 
 # Pattern matching preferences
 csharp_style_pattern_matching_over_as_with_null_check = true
@@ -130,7 +130,7 @@ csharp_style_prefer_readonly_struct = true
 csharp_style_prefer_readonly_struct_member = true
 
 # Code-block preferences
-csharp_prefer_braces = true:silent
+csharp_prefer_braces = true:suggestion
 csharp_prefer_simple_using_statement = false:suggestion
 csharp_style_namespace_declarations = file_scoped:suggestion
 csharp_style_prefer_method_group_conversion = true:silent
@@ -149,8 +149,8 @@ csharp_style_prefer_range_operator = true:suggestion
 csharp_style_prefer_tuple_swap = true:suggestion
 csharp_style_prefer_utf8_string_literals = true:suggestion
 csharp_style_throw_expression = true:suggestion
-csharp_style_unused_value_assignment_preference = discard_variable
-csharp_style_unused_value_expression_statement_preference = discard_variable
+csharp_style_unused_value_assignment_preference = discard_variable:none
+csharp_style_unused_value_expression_statement_preference = discard_variable:none
 
 # 'using' directive preferences
 csharp_using_directive_placement = outside_namespace:suggestion

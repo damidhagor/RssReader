@@ -1,3 +1,5 @@
+using RssReader.AppHost.Authentik;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 var postgres = builder.AddPostgres("postgres")
@@ -15,5 +17,19 @@ postgres.WithDbGate(
     "postgres-dbgate");
 
 var rssReaderDb = postgres.AddDatabase("postgres-rssreader", "rssreader");
+var authentikDb = postgres.AddDatabase("postgres-authentik", "authentik");
+
+builder.AddAuthentik(
+    "authentik",
+    authentikDb,
+    server => server
+        .WithContainerName("rss-authentik-server")
+        .WithLifetime(ContainerLifetime.Persistent),
+    worker => worker
+        .WithContainerName("rss-authentik-worker")
+        .WithLifetime(ContainerLifetime.Persistent))
+    .WithMediaVolume("rss-authentik-media")
+    .WithTemplatesVolume("rss-authentik-templates")
+    .WithCertsVolume("rss-authentik-certs");
 
 builder.Build().Run();
