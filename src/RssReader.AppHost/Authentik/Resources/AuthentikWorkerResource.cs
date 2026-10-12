@@ -7,4 +7,10 @@ internal sealed class AuthentikWorkerResource(string name) : ContainerResource(n
     public EndpointReferenceExpression Host => HttpEndpoint.Property(EndpointProperty.Host);
 
     public EndpointReferenceExpression Port => HttpEndpoint.Property(EndpointProperty.Port);
+
+    internal bool BlueprintsRegistered { get; set; }
+
+    internal List<UserSpec> Users { get; } = [];
+
+    internal List<OidcApplicationSpec> OidcApplications { get; } = [];
 }

@@ -163,6 +163,28 @@ internal static partial class AuthentikExtensions
             });
     }
 
+    private static void EnsureBlueprints(this IResourceBuilder<AuthentikResource> builder)
+    {
+        var worker = builder.Resource.Worker;
+
+        if (worker.BlueprintsRegistered)
+        {
+            return;
+        }
+
+        worker.BlueprintsRegistered = true;
+
+        builder.ApplicationBuilder.CreateResourceBuilder(worker).WithContainerFiles(
+            "/blueprints/custom",
+            async (_, cancellationToken) =>
+            {
+                var contents = await AuthentikBlueprints.Render(worker.Users, worker.OidcApplications, cancellationToken)
+                    .ConfigureAwait(false);
+
+                return [new ContainerFile { Name = "aspire-blueprints.yaml", Contents = contents }];
+            });
+    }
+
     private static string ExportDevCertificatePrivateKeyPem(X509Certificate2 certificate)
     {
         using var rsaKey = certificate.GetRSAPrivateKey();

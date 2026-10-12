@@ -30,6 +30,12 @@ builder.AddAuthentik(
         .WithLifetime(ContainerLifetime.Persistent))
     .WithMediaVolume("rss-authentik-media")
     .WithTemplatesVolume("rss-authentik-templates")
-    .WithCertsVolume("rss-authentik-certs");
+    .WithCertsVolume("rss-authentik-certs")
+    .WithUser("dev")
+    .WithOidcApplication(
+        "rssreader-web",
+        app => app
+            .WithRedirectUri("https://localhost:5173/authentication/login-callback")
+            .WithLogoutRedirectUri("https://localhost:5173/authentication/logout-callback"));
 
 builder.Build().Run();
