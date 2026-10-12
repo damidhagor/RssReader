@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "src/RssReader.AppHost/RssReader.AppHost.csproj"
+  }
+}

@@ -26,4 +26,5 @@
     <File Path="../.github/scripts/format-check.sh" />
     <File Path="../.github/scripts/check-vulnerabilities.sh" />
   </Folder>
+  <Project Path="RssReader.AppHost/RssReader.AppHost.csproj" />
 </Solution>

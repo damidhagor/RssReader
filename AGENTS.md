@@ -227,7 +227,7 @@ tradeoff — but do not silently resolve or silently ignore any of them, regardl
   public sealed record class NotModified : FetchResult;
   public sealed record class FetchFailed(string Reason) : FetchResult;
 
-  public async Task<FetchResult> FetchAsync(Uri feedUrl, CancellationToken cancellationToken)
+  public async Task<FetchResult> Fetch(Uri feedUrl, CancellationToken cancellationToken)
   {
       // ...
   }
@@ -378,6 +378,10 @@ situation genuinely calls for it rather than looking for excuses to use them:
 - When renaming a method/type/endpoint, grep the whole solution (interfaces, implementations, and especially
   test file/class names) for the old name afterward — partial renames that leave stale naming on test classes
   are easy to miss since they still compile and pass.
+- **Do not suffix async method names with `Async`.** This departs from the common .NET/BCL convention —
+  name methods for what they do (`FetchFeed`, `MarkAuthentikRunning`), regardless of whether they return
+  `Task`/`Task<T>`/`ValueTask`/`ValueTask<T>`. Applies to all async methods, including private/internal
+  helpers.
 
 ## Testing
 

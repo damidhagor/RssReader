@@ -39,7 +39,7 @@ The web app ships first. Other clients are deliberately deferred until the web a
 | Feed parsing | `System.ServiceModel.Syndication` | Official, maintained NuGet package; covers RSS 2.0 + Atom 1.0 with `ElementExtensions`/`AttributeExtensions` for the rest |
 | Web client | Blazor WebAssembly | Consumes the API like any other client (no shadow access path); reusable in a future MAUI Blazor Hybrid client |
 | Authentication | OIDC via the user's existing Authentik instance | No local password/user store; API validates JWT bearer tokens, web client does Authorization Code + PKCE |
-| Local orchestration/dev | .NET Aspire (AppHost + ServiceDefaults) | Wires up Postgres + Api + Worker + Web for local dev; used instead of hand-written docker-compose for that purpose |
+| Local orchestration/dev | .NET Aspire (AppHost + ServiceDefaults) | Wires up Postgres + a local Authentik (OIDC) + Api + Worker + Web for local dev; used instead of hand-written docker-compose for that purpose |
 | Local/integration testing | TUnit + `Aspire.Hosting.Testing` | Real Postgres via the AppHost rather than Testcontainers or fully mocked repositories |
 | EF Core migrations | Aspire `AddEFMigrations` (`Aspire.Hosting.EntityFrameworkCore`) | `RunDatabaseUpdateOnStart()` for local dev; `PublishAsMigrationBundle(publishContainer: true)` for a standalone migration container image in production, avoiding both auto-migrate-on-startup races between Api/Worker and a bespoke admin migration endpoint |
 | Production deployment | VPS + Docker Compose | Already available; whether `aspire publish` generates the Compose artifacts or they stay hand-maintained is still to be trialed (see [Open Questions](#open-questions)) |
@@ -162,6 +162,9 @@ password/user store (ASP.NET Core Identity is not used):
 - **`RssReader.Web`** (Blazor WebAssembly) performs the OIDC Authorization Code + PKCE flow against Authentik
   and sends the resulting token as a bearer token to the API.
 - Internal user records are keyed off the OIDC subject (`sub`) claim, not a locally managed credential.
+- **Local dev** runs a real Authentik instance via Aspire (see `docs/ARCHITECTURE.md`'s
+  [Local Development](ARCHITECTURE.md#local-development)), with users and OIDC applications provisioned
+  automatically from `AppHost.cs`, so this flow can be tested end-to-end before `Api`/`Web` exist.
 
 ## Content Filtering
 

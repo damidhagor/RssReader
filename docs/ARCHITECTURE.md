@@ -51,8 +51,8 @@ graph LR
 - **`RssReader.Web`** — Blazor WebAssembly client. Performs the OIDC Authorization Code + PKCE flow against
   Authentik, then calls `RssReader.Api` over HTTP with the resulting bearer token, and (v2) connects to
   `RssReader.Api`'s SignalR hub for live updates.
-- **`RssReader.AppHost`** — Aspire orchestration for local dev (Postgres + Api + Worker + Web + EF Core
-  migrations) and the host for `Aspire.Hosting.Testing`-based integration tests.
+- **`RssReader.AppHost`** — Aspire orchestration for local dev (Postgres + a local Authentik instance + Api +
+  Worker + Web + EF Core migrations) and the host for `Aspire.Hosting.Testing`-based integration tests.
 - **`RssReader.ServiceDefaults`** — shared OpenTelemetry/health-check/resilience wiring referenced by `Api`,
   `Worker`, `Web`, and `Data`.
 
@@ -143,6 +143,21 @@ are captured in a `jsonb` column rather than modeled relationally.
    token's `sub` claim to an internal `User` record.
 
 No local password/user store — no ASP.NET Core Identity.
+
+### Local Development
+
+Production delegates to the user's existing Authentik instance, but local dev runs a real Authentik via
+Aspire so the full OIDC flow can be exercised end-to-end. `RssReader.AppHost` models it as a custom
+`authentik` resource: a dashboard-only parent over two containers (`authentik-server`, `authentik-worker`)
+backed by a `postgres-authentik` database. Authentik no longer needs Redis.
+
+Users and OIDC applications are declared in `AppHost.cs` via `WithUser(...)` and
+`WithOidcApplication(name, app => app.WithRedirectUri(...).WithLogoutRedirectUri(...))`. Each application is
+a public client (Authorization Code + PKCE, no client secret) and can have several redirect/logout URIs,
+e.g. one per platform for a cross-platform client. The AppHost renders these into an Authentik blueprint
+(`/blueprints/custom/aspire-blueprints.yaml`) at container start, so nothing is configured by hand in the
+Authentik admin UI. The Authentik containers trust the Aspire developer certificate so HTTPS works locally.
+User passwords are Aspire parameters (`authentik-user-<username>-password`) stored in user secrets.
 
 ## Real-Time Updates
 

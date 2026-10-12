@@ -1,0 +1,21 @@
+version: 1
+metadata:
+  name: RssReader - Aspire developer certificate trust
+entries:
+  - model: authentik_crypto.certificatekeypair
+    id: aspire-dev-cert
+    identifiers:
+      name: aspire-dev-cert
+    attrs:
+      certificate_data: !Env [AUTHENTIK_ASPIRE_DEV_CERT_PEM, ""]
+      key_data: !Env [AUTHENTIK_ASPIRE_DEV_CERT_KEY_PEM, ""]
+    conditions:
+      - !Condition [OR, !Env [AUTHENTIK_ASPIRE_DEV_CERT_PEM, ""]]
+  - model: authentik_brands.brand
+    identifiers:
+      domain: authentik-default
+    attrs:
+      default: true
+      web_certificate: !KeyOf aspire-dev-cert
+    conditions:
+      - !Condition [OR, !Env [AUTHENTIK_ASPIRE_DEV_CERT_PEM, ""]]
